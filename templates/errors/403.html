@@ -1,0 +1,12 @@
+{% extends 'base.html' %}
+{% block title %}403 Forbidden – QuizCert{% endblock %}
+{% block content %}
+<div class="auth-wrapper">
+    <div class="glass-card auth-card text-center" style="padding:3rem;">
+        <div style="font-size:4rem; margin-bottom:1rem;">🚫</div>
+        <h1 style="font-size:2rem; font-weight:800; color:#e74c3c;">403 – Forbidden</h1>
+        <p style="color:var(--text-muted); margin:1rem 0;">You don't have permission to access this page.</p>
+        <a href="{{ url_for('index') }}" class="btn-primary-custom" style="justify-content:center;">← Go Home</a>
+    </div>
+</div>
+{% endblock %}

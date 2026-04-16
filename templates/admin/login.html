@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Admin Login – QuizCert</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}" />
+</head>
+
+<body>
+    <div class="content-wrapper">
+        <div class="auth-wrapper">
+            <div class="glass-card auth-card">
+                <div class="auth-logo">⚙️</div>
+                <h1 class="auth-title">Admin Login</h1>
+                <p class="auth-subtitle">Management access only</p>
+
+                {% with messages = get_flashed_messages(with_categories=true) %}
+                {% if messages %}
+                {% for category, message in messages %}
+                <div class="alert-custom alert-{{ category }}">
+                    <span>{% if category == 'success' %}✅{% elif category == 'danger' %}❌{% else %}ℹ️{% endif %}</span>
+                    <span>{{ message }}</span>
+                </div>
+                {% endfor %}
+                {% endif %}
+                {% endwith %}
+
+                <form method="POST" action="{{ url_for('admin_login') }}">
+                    <div class="form-group">
+                        <label class="form-label" for="admin-email">Admin Email</label>
+                        <input type="email" class="form-control-custom" id="admin-email" name="email"
+                            placeholder="admin@quiz.com" required />
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label" for="admin-password">Password</label>
+                        <input type="password" class="form-control-custom" id="admin-password" name="password"
+                            placeholder="Admin password" required />
+                    </div>
+                    <button type="submit" class="btn-primary-custom w-full" style="justify-content:center;">
+                        🔐 Login as Admin
+                    </button>
+                </form>
+
+                <div class="alert-custom alert-info mt-3"
+                    style="font-size:0.82rem; flex-direction:column; align-items:flex-start; gap:0.2rem;">
+                    <strong>🧪 Demo Admin</strong>
+                    <span>Email: <code>admin@quiz.com</code> &nbsp; Password: <code>admin123</code></span>
+                </div>
+
+                <p class="text-center text-small mt-3" style="color:var(--text-muted);">
+                    <a href="{{ url_for('login') }}" style="color:var(--primary-light); text-decoration:none;">← User
+                        Login</a>
+                </p>
+            </div>
+        </div>
+    </div>
+    <script src="{{ url_for('static', filename='js/app.js') }}"></script>
+</body>
+
+</html>

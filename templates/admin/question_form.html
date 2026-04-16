@@ -1,0 +1,58 @@
+{% extends 'admin/base.html' %}
+{% block title %}{% if question %}Edit Question{% else %}Add Question{% endif %} – Admin{% endblock %}
+
+{% block content %}
+<div class="mb-4">
+    <a href="{{ url_for('admin_questions', quiz_id=quiz.id) }}"
+        style="color:var(--primary-light); text-decoration:none; font-size:0.88rem;">
+        ← Back to Questions
+    </a>
+    <h1 class="section-title mt-2">
+        {% if question %}✏️ Edit Question{% else %}➕ Add Question{% endif %}
+    </h1>
+    <p class="section-subtitle">Quiz: {{ quiz.title }}</p>
+</div>
+
+<div class="glass-card admin-card" style="max-width:640px;">
+    <form method="POST"
+        action="{% if question %}{{ url_for('admin_edit_question', q_id=question.id) }}{% else %}{{ url_for('admin_add_question', quiz_id=quiz.id) }}{% endif %}">
+
+        <div class="form-group">
+            <label class="form-label" for="question-text">Question Text *</label>
+            <textarea class="form-control-custom" id="question-text" name="question" rows="3" required
+                placeholder="Enter the question...">{{ question.question if question else '' }}</textarea>
+        </div>
+
+        <div style="display:grid; grid-template-columns:1fr 1fr; gap:1rem;">
+            {% for i in [1,2,3,4] %}
+            <div class="form-group">
+                <label class="form-label" for="opt{{ i }}">
+                    Option {{ ['A','B','C','D'][i-1] }} *
+                </label>
+                <input type="text" class="form-control-custom" id="opt{{ i }}" name="option{{ i }}"
+                    value="{{ question['option'~i] if question else '' }}" required
+                    placeholder="Option {{ ['A','B','C','D'][i-1] }}..." />
+            </div>
+            {% endfor %}
+        </div>
+
+        <div class="form-group mt-2">
+            <label class="form-label" for="correct-opt">Correct Answer *</label>
+            <select class="form-control-custom" id="correct-opt" name="correct_option" required>
+                {% for i, label in [(1,'A'),(2,'B'),(3,'C'),(4,'D')] %}
+                <option value="{{ i }}" {% if question and question.correct_option==i %}selected{% endif %}>
+                    Option {{ label }}
+                </option>
+                {% endfor %}
+            </select>
+        </div>
+
+        <div class="d-flex gap-2 mt-3">
+            <button type="submit" class="btn-primary-custom">
+                {% if question %}💾 Save Changes{% else %}➕ Add Question{% endif %}
+            </button>
+            <a href="{{ url_for('admin_questions', quiz_id=quiz.id) }}" class="btn-outline-custom">Cancel</a>
+        </div>
+    </form>
+</div>
+{% endblock %}

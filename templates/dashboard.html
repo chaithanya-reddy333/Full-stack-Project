@@ -1,0 +1,174 @@
+{% extends 'base.html' %}
+{% block title %}Dashboard – QuizCert{% endblock %}
+
+{% block content %}
+<div class="container p-page">
+
+    <!-- Welcome -->
+    <div class="d-flex justify-between align-center flex-wrap gap-2 mb-4">
+        <div>
+            <h1 class="section-title">👋 Hello, {{ user.name }}!</h1>
+            <p class="section-subtitle">Your learning journey at a glance</p>
+        </div>
+        <a href="{{ url_for('index') }}" class="btn-primary-custom">Browse Quizzes →</a>
+    </div>
+
+    <!-- Stats Row -->
+    <div class="row g-3 mb-4">
+        <div class="col-6 col-md-4">
+            <div class="glass-card dashboard-stat-card">
+                <div class="dashboard-stat-icon">📝</div>
+                <div class="dashboard-stat-number" data-counter="{{ total_taken }}">{{ total_taken }}</div>
+                <div class="dashboard-stat-label">Quizzes Taken</div>
+            </div>
+        </div>
+        <div class="col-6 col-md-4">
+            <div class="glass-card dashboard-stat-card">
+                <div class="dashboard-stat-icon">✅</div>
+                <div class="dashboard-stat-number" data-counter="{{ total_passed }}">{{ total_passed }}</div>
+                <div class="dashboard-stat-label">Quizzes Passed</div>
+            </div>
+        </div>
+        <div class="col-6 col-md-4">
+            <div class="glass-card dashboard-stat-card">
+                <div class="dashboard-stat-icon">📈</div>
+                <div class="dashboard-stat-number">{{ avg_score }}%</div>
+                <div class="dashboard-stat-label">Average Score</div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row g-4">
+
+        <!-- Available Quizzes -->
+        <div class="col-lg-7">
+            <div class="glass-card admin-card">
+                <h2 class="section-title mb-1">Available Quizzes</h2>
+                <p class="section-subtitle">Click a quiz to start</p>
+                <div class="row g-3">
+                    {% for quiz in quizzes %}
+                    <div class="col-12">
+                        <div style="display:flex; align-items:center; gap:1rem; padding:1rem; border:1px solid var(--card-border);
+                          border-radius:var(--radius-sm); transition:var(--transition);" class="glass-card"
+                            style="padding:1rem; cursor:default;">
+                            <div style="font-size:1.6rem;">
+                                {% set icons = ['📘','🧪','🌐','📊','🔬','💡','🎯','🧠'] %}
+                                {{ icons[loop.index0 % icons|length] }}
+                            </div>
+                            <div style="flex:1; min-width:0;">
+                                <div
+                                    style="font-weight:600; font-size:0.95rem; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">
+                                    {{ quiz.title }}
+                                </div>
+                                <div style="font-size:0.78rem; color:var(--text-muted);">
+                                    ❓ {{ quiz.questions|length }} questions &nbsp;·&nbsp; 🎯 Pass: {{ quiz.passing_score
+                                    }}%
+                                    {% if quiz.time_limit > 0 %}
+                                    &nbsp;·&nbsp; ⏱️ {{ (quiz.time_limit // 60) }}m
+                                    {% endif %}
+                                </div>
+                            </div>
+                            <div style="display:flex; gap:0.5rem; flex-shrink:0;">
+                                {# Show if already passed #}
+                                {% if quiz.id in result_map and result_map[quiz.id].passed %}
+                                <span class="badge-pass">✅ Passed</span>
+                                <a href="{{ url_for('download_certificate', result_id=result_map[quiz.id].id) }}"
+                                    class="btn-accent-custom" style="padding:0.35rem 0.9rem; font-size:0.78rem;">
+                                    📄 Cert
+                                </a>
+                                {% endif %}
+                                <a href="{{ url_for('quiz', quiz_id=quiz.id) }}" class="btn-primary-custom"
+                                    style="padding:0.35rem 0.9rem; font-size:0.78rem;">
+                                    {% if quiz.id in result_map %}Retake{% else %}Start{% endif %}
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                    {% else %}
+                    <p style="color:var(--text-muted);">No quizzes available yet.</p>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+
+        <!-- Quiz History -->
+        <div class="col-lg-5">
+            <div class="glass-card admin-card">
+                <h2 class="section-title mb-1">📜 Result History</h2>
+                <p class="section-subtitle">Your recent attempts</p>
+                {% if results %}
+                <div style="overflow-x:auto;">
+                    <table class="history-table">
+                        <thead>
+                            <tr>
+                                <th>Quiz</th>
+                                <th>Score</th>
+                                <th>Status</th>
+                                <th>Action</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for r in results %}
+                            <tr>
+                                <td
+                                    style="max-width:140px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;">
+                                    {{ r.quiz.title }}
+                                </td>
+                                <td
+                                    style="font-weight:600; color:{% if r.passed %}var(--accent){% else %}#e74c3c{% endif %};">
+                                    {{ r.score }}%
+                                </td>
+                                <td>
+                                    {% if r.passed %}
+                                    <span class="badge-pass">Pass</span>
+                                    {% else %}
+                                    <span class="badge-fail">Fail</span>
+                                    {% endif %}
+                                </td>
+                                <td>
+                                    {% if r.passed %}
+                                    <a href="{{ url_for('download_certificate', result_id=r.id) }}"
+                                        class="btn-accent-custom" style="padding:0.3rem 0.7rem; font-size:0.75rem;">
+                                        📥
+                                    </a>
+                                    {% else %}
+                                    <a href="{{ url_for('quiz', quiz_id=r.quiz_id) }}" class="btn-outline-custom"
+                                        style="padding:0.3rem 0.7rem; font-size:0.75rem;">
+                                        🔄
+                                    </a>
+                                    {% endif %}
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+                {% else %}
+                <div class="text-center" style="padding:2rem 0; color:var(--text-muted);">
+                    <div style="font-size:2.5rem; margin-bottom:0.5rem;">🎯</div>
+                    <p>No quiz attempts yet.<br />Take your first quiz to see results here!</p>
+                </div>
+                {% endif %}
+            </div>
+
+            <!-- Certificate Verification -->
+            <div class="glass-card admin-card mt-0">
+                <h3 style="font-size:1rem; font-weight:700; margin-bottom:0.75rem;">🔍 Verify a Certificate</h3>
+                <form action="/certificate/verify/placeholder" id="verifyForm" method="GET"
+                    onsubmit="event.preventDefault(); window.location='/certificate/verify/'+document.getElementById('certIdInput').value;">
+                    <div class="d-flex gap-1">
+                        <input type="text" class="form-control-custom" id="certIdInput"
+                            placeholder="Enter Certificate ID..."
+                            style="flex:1; padding:0.6rem 0.9rem; font-size:0.85rem;" />
+                        <button type="submit" class="btn-primary-custom"
+                            style="padding:0.6rem 1rem; font-size:0.85rem;">
+                            Verify
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+    </div>
+</div>
+{% endblock %}

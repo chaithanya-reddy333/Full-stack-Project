@@ -1,0 +1,96 @@
+{% extends 'base.html' %}
+{% block title %}Result – {{ quiz.title }} – QuizCert{% endblock %}
+
+{% block content %}
+<div class="container p-page" style="max-width:680px;">
+    <div class="glass-card" style="padding:2.5rem; text-align:center;">
+
+        <!-- Score Circle -->
+        <div class="result-circle {% if result.passed %}pass{% else %}fail{% endif %}" id="resultCircle"
+            data-score="{{ result.score }}" style="margin-bottom:1.5rem;">
+            <div class="result-score">{{ result.score|int }}%</div>
+            <div class="result-label">Score</div>
+        </div>
+
+        <!-- Pass / Fail badge -->
+        <div class="result-badge {% if result.passed %}pass{% else %}fail{% endif %}">
+            {% if result.passed %}
+            🎉 Congratulations! You Passed!
+            {% else %}
+            😔 Better Luck Next Time
+            {% endif %}
+        </div>
+
+        <h1 style="font-size:1.4rem; font-weight:800; margin-bottom:0.5rem;">{{ quiz.title }}</h1>
+        <p style="color:var(--text-muted); font-size:0.9rem;">
+            Completed on {{ result.taken_at.strftime('%B %d, %Y at %I:%M %p') }}
+        </p>
+
+        <!-- Stats Grid -->
+        <div class="row g-3 mt-2 mb-3">
+            <div class="col-4">
+                <div style="padding:1rem; background:rgba(255,255,255,0.04); border-radius:var(--radius-sm);">
+                    <div style="font-size:1.5rem; font-weight:800; color:var(--primary-light);">{{ result.score }}%
+                    </div>
+                    <div style="font-size:0.75rem; color:var(--text-muted);">Your Score</div>
+                </div>
+            </div>
+            <div class="col-4">
+                <div style="padding:1rem; background:rgba(255,255,255,0.04); border-radius:var(--radius-sm);">
+                    <div style="font-size:1.5rem; font-weight:800; color:var(--accent);">{{ quiz.passing_score }}%</div>
+                    <div style="font-size:0.75rem; color:var(--text-muted);">Pass Mark</div>
+                </div>
+            </div>
+            <div class="col-4">
+                <div style="padding:1rem; background:rgba(255,255,255,0.04); border-radius:var(--radius-sm);">
+                    <div style="font-size:1.5rem; font-weight:800;
+                      color:{% if result.passed %}var(--accent){% else %}#e74c3c{% endif %};">
+                        {% if result.passed %}✅{% else %}❌{% endif %}
+                    </div>
+                    <div style="font-size:0.75rem; color:var(--text-muted);">Status</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Certificate Section -->
+        {% if result.passed %}
+        <div class="certificate-preview-card mt-3">
+            <div class="cert-emoji animate-float">🏆</div>
+            <div class="cert-title">Certificate of Achievement</div>
+            <div class="cert-subtitle">Awarded to</div>
+            <div class="cert-name">{{ user.name }}</div>
+            <div class="cert-info">for successfully completing <strong>{{ quiz.title }}</strong><br />
+                with a score of <strong style="color:var(--accent);">{{ result.score }}%</strong>
+            </div>
+            <div class="cert-id">ID: {{ result.certificate_id }}</div>
+        </div>
+
+        <a href="{{ url_for('download_certificate', result_id=result.id) }}" class="btn-accent-custom mt-3"
+            style="justify-content:center;">
+            📥 Download PDF Certificate
+        </a>
+
+        <p class="text-small mt-2" style="color:var(--text-muted);">
+            Share your achievement! Verify at:
+            <code style="color:var(--primary-light);">/certificate/verify/{{ result.certificate_id[:8] }}...</code>
+        </p>
+        {% else %}
+        <div class="alert-custom alert-warning mt-3" style="justify-content:center;">
+            <span>📚</span>
+            <span>You needed {{ quiz.passing_score }}% to pass. Review the topic and try again!</span>
+        </div>
+        <a href="{{ url_for('quiz', quiz_id=quiz.id) }}" class="btn-primary-custom mt-3"
+            style="justify-content:center;">
+            🔄 Retake Quiz
+        </a>
+        {% endif %}
+
+        <!-- Navigation -->
+        <div class="d-flex gap-2 justify-center mt-3 flex-wrap">
+            <a href="{{ url_for('dashboard') }}" class="btn-outline-custom">📊 Dashboard</a>
+            <a href="{{ url_for('index') }}" class="btn-outline-custom">🏠 Home</a>
+        </div>
+
+    </div>
+</div>
+{% endblock %}

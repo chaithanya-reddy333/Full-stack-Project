@@ -1,0 +1,63 @@
+{% extends 'admin/base.html' %}
+{% block title %}Questions – {{ quiz.title }} – Admin{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-between align-center flex-wrap gap-2 mb-4">
+    <div>
+        <a href="{{ url_for('admin_quizzes') }}"
+            style="color:var(--primary-light); text-decoration:none; font-size:0.88rem;">
+            ← All Quizzes
+        </a>
+        <h1 class="section-title mt-1">❓ Questions: {{ quiz.title }}</h1>
+        <p class="section-subtitle">{{ quiz.questions|length }} question(s) · Pass: {{ quiz.passing_score }}%</p>
+    </div>
+    <a href="{{ url_for('admin_add_question', quiz_id=quiz.id) }}" class="btn-primary-custom">+ Add Question</a>
+</div>
+
+<div class="glass-card admin-card">
+    {% if quiz.questions %}
+    {% for q in quiz.questions %}
+    <div style="padding:1.25rem; border:1px solid var(--card-border); border-radius:var(--radius-sm);
+                  margin-bottom:0.75rem; background:rgba(255,255,255,0.02);">
+        <div class="d-flex justify-between align-center flex-wrap gap-2">
+            <div style="flex:1;">
+                <span
+                    style="font-size:0.78rem; color:var(--primary-light); font-weight:600; text-transform:uppercase; letter-spacing:0.5px;">
+                    Q{{ loop.index }}
+                </span>
+                <p style="font-weight:600; font-size:0.95rem; margin:0.3rem 0;">{{ q.question }}</p>
+                <div style="display:grid; grid-template-columns:1fr 1fr; gap:0.3rem; margin-top:0.5rem;">
+                    {% for i, opt in [(1, q.option1), (2, q.option2), (3, q.option3), (4, q.option4)] %}
+                    <div
+                        style="font-size:0.82rem; padding:0.25rem 0.5rem; border-radius:6px;
+                            background:{% if i == q.correct_option %}rgba(67,198,172,0.2){% else %}rgba(255,255,255,0.04){% endif %};
+                            color:{% if i == q.correct_option %}var(--accent){% else %}var(--text-muted){% endif %};
+                            border:1px solid {% if i == q.correct_option %}rgba(67,198,172,0.3){% else %}transparent{% endif %};">
+                        {{ ['A','B','C','D'][i-1] }}. {{ opt }}
+                        {% if i == q.correct_option %}<strong> ✓</strong>{% endif %}
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+            <div style="display:flex; gap:0.5rem; flex-shrink:0;">
+                <a href="{{ url_for('admin_edit_question', q_id=q.id) }}" class="btn-outline-custom"
+                    style="padding:0.3rem 0.7rem; font-size:0.78rem;">
+                    ✏️
+                </a>
+                <form method="POST" action="{{ url_for('admin_delete_question', q_id=q.id) }}" style="display:inline;">
+                    <button type="submit" class="btn-danger-custom" data-confirm="Delete this question?"
+                        style="padding:0.3rem 0.7rem; font-size:0.78rem;">🗑️</button>
+                </form>
+            </div>
+        </div>
+    </div>
+    {% endfor %}
+    {% else %}
+    <div class="text-center" style="padding:3rem 0; color:var(--text-muted);">
+        <div style="font-size:3rem; margin-bottom:1rem;">❓</div>
+        <p>No questions yet. <a href="{{ url_for('admin_add_question', quiz_id=quiz.id) }}"
+                style="color:var(--primary-light);">Add the first question!</a></p>
+    </div>
+    {% endif %}
+</div>
+{% endblock %}

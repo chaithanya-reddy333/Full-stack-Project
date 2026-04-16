@@ -1,0 +1,69 @@
+{% extends 'admin/base.html' %}
+{% block title %}Manage Quizzes – Admin{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-between align-center flex-wrap gap-2 mb-4">
+    <div>
+        <h1 class="section-title">📝 Manage Quizzes</h1>
+        <p class="section-subtitle">Create and manage quiz content</p>
+    </div>
+    <a href="{{ url_for('admin_create_quiz') }}" class="btn-primary-custom">+ Create Quiz</a>
+</div>
+
+<div class="glass-card admin-card">
+    {% if quizzes %}
+    <div style="overflow-x:auto;">
+        <table class="admin-table">
+            <thead>
+                <tr>
+                    <th>#</th>
+                    <th>Title</th>
+                    <th>Questions</th>
+                    <th>Pass Score</th>
+                    <th>Time Limit</th>
+                    <th>Created</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for quiz in quizzes %}
+                <tr>
+                    <td style="color:var(--text-muted);">{{ quiz.id }}</td>
+                    <td style="font-weight:600;">{{ quiz.title }}</td>
+                    <td>
+                        <a href="{{ url_for('admin_questions', quiz_id=quiz.id) }}"
+                            style="color:var(--primary-light); text-decoration:none; font-weight:600;">
+                            {{ quiz.questions|length }} Qs
+                        </a>
+                    </td>
+                    <td>{{ quiz.passing_score }}%</td>
+                    <td>{% if quiz.time_limit > 0 %}{{ quiz.time_limit // 60 }}m{% else %}None{% endif %}</td>
+                    <td style="white-space:nowrap;">{{ quiz.created_at.strftime('%b %d, %Y') }}</td>
+                    <td style="white-space:nowrap; display:flex; gap:0.5rem; flex-wrap:wrap;">
+                        <a href="{{ url_for('admin_questions', quiz_id=quiz.id) }}" class="btn-outline-custom"
+                            style="padding:0.3rem 0.7rem; font-size:0.75rem;">❓ Questions</a>
+                        <a href="{{ url_for('admin_edit_quiz', quiz_id=quiz.id) }}" class="btn-outline-custom"
+                            style="padding:0.3rem 0.7rem; font-size:0.75rem;">✏️ Edit</a>
+                        <form method="POST" action="{{ url_for('admin_delete_quiz', quiz_id=quiz.id) }}"
+                            style="display:inline;">
+                            <button type="submit" class="btn-danger-custom"
+                                data-confirm="Are you sure you want to delete '{{ quiz.title }}'? This will also delete all questions and results."
+                                style="padding:0.3rem 0.7rem; font-size:0.75rem;">
+                                🗑️
+                            </button>
+                        </form>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    {% else %}
+    <div class="text-center" style="padding:3rem 0; color:var(--text-muted);">
+        <div style="font-size:3rem; margin-bottom:1rem;">📭</div>
+        <p>No quizzes yet. <a href="{{ url_for('admin_create_quiz') }}" style="color:var(--primary-light);">Create the
+                first one!</a></p>
+    </div>
+    {% endif %}
+</div>
+{% endblock %}

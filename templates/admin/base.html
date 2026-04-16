@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>{% block title %}Admin – QuizCert{% endblock %}</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}" />
+</head>
+
+<body>
+    <div class="content-wrapper d-flex" style="min-height:100vh;">
+
+        <!-- ===== SIDEBAR ===== -->
+        <aside class="admin-sidebar">
+            <div style="margin-bottom:2rem; padding:0.5rem 1rem;">
+                <div style="font-size:1.3rem; font-weight:800; background:linear-gradient(135deg,var(--primary),var(--accent));
+                  -webkit-background-clip:text; -webkit-text-fill-color:transparent; background-clip:text;">
+                    🎓 QuizCert Admin
+                </div>
+                <div style="font-size:0.78rem; color:var(--text-muted); margin-top:0.25rem;">
+                    Management Panel
+                </div>
+            </div>
+
+            <nav>
+                <a href="{{ url_for('admin_dashboard') }}"
+                    class="admin-nav-item {% if request.endpoint == 'admin_dashboard' %}active{% endif %}">
+                    <span class="admin-nav-icon">📊</span> Dashboard
+                </a>
+                <a href="{{ url_for('admin_quizzes') }}"
+                    class="admin-nav-item {% if 'quiz' in request.endpoint %}active{% endif %}">
+                    <span class="admin-nav-icon">📝</span> Quizzes
+                </a>
+                <a href="{{ url_for('admin_users') }}"
+                    class="admin-nav-item {% if request.endpoint == 'admin_users' %}active{% endif %}">
+                    <span class="admin-nav-icon">👥</span> Users
+                </a>
+                <a href="{{ url_for('admin_results') }}"
+                    class="admin-nav-item {% if request.endpoint == 'admin_results' %}active{% endif %}">
+                    <span class="admin-nav-icon">📈</span> Results
+                </a>
+                <hr style="border-color:var(--card-border); margin:1rem 0;" />
+                <a href="{{ url_for('index') }}" class="admin-nav-item">
+                    <span class="admin-nav-icon">🌐</span> View Site
+                </a>
+                <a href="{{ url_for('admin_logout') }}" class="admin-nav-item" style="color:#e74c3c;">
+                    <span class="admin-nav-icon">🚪</span> Logout
+                </a>
+            </nav>
+        </aside>
+
+        <!-- ===== MAIN ===== -->
+        <main class="admin-main flex-grow-1">
+
+            <!-- Flash messages -->
+            {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+            {% for category, message in messages %}
+            <div class="alert-custom alert-{{ category }} mb-3">
+                <span>{% if category == 'success' %}✅{% elif category == 'danger' %}❌{% elif category == 'warning'
+                    %}⚠️{% else %}ℹ️{% endif %}</span>
+                <span>{{ message }}</span>
+            </div>
+            {% endfor %}
+            {% endif %}
+            {% endwith %}
+
+            {% block content %}{% endblock %}
+        </main>
+
+    </div>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="{{ url_for('static', filename='js/app.js') }}"></script>
+</body>
+
+</html>

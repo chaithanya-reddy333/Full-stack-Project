@@ -1,0 +1,80 @@
+{% extends 'admin/base.html' %}
+{% block title %}Admin Dashboard – QuizCert{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-between align-center flex-wrap gap-2 mb-4">
+    <div>
+        <h1 class="section-title">📊 Admin Dashboard</h1>
+        <p class="section-subtitle">Overview of the QuizCert platform</p>
+    </div>
+    <a href="{{ url_for('admin_create_quiz') }}" class="btn-primary-custom">+ New Quiz</a>
+</div>
+
+<!-- Stats -->
+<div class="row g-3 mb-4">
+    {% for icon, value, label in [
+    ('👥', total_users, 'Total Users'),
+    ('📝', total_quizzes, 'Quizzes'),
+    ('📈', total_results, 'Attempts'),
+    ('🏆', total_certs, 'Certificates')
+    ] %}
+    <div class="col-6 col-xl-3">
+        <div class="glass-card dashboard-stat-card">
+            <div class="dashboard-stat-icon">{{ icon }}</div>
+            <div class="dashboard-stat-number" data-counter="{{ value }}">{{ value }}</div>
+            <div class="dashboard-stat-label">{{ label }}</div>
+        </div>
+    </div>
+    {% endfor %}
+</div>
+
+<!-- Recent Attempts -->
+<div class="glass-card admin-card">
+    <h2 class="section-title mb-1">Recent Quiz Attempts</h2>
+    <p class="section-subtitle">Latest 10 submissions</p>
+    <div style="overflow-x:auto;">
+        <table class="admin-table">
+            <thead>
+                <tr>
+                    <th>User</th>
+                    <th>Quiz</th>
+                    <th>Score</th>
+                    <th>Status</th>
+                    <th>Date</th>
+                    <th>Action</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for result, user, quiz in recent_results %}
+                <tr>
+                    <td>{{ user.name }}</td>
+                    <td style="max-width:180px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;">{{
+                        quiz.title }}</td>
+                    <td style="font-weight:600; color:{% if result.passed %}var(--accent){% else %}#e74c3c{% endif %};">
+                        {{ result.score }}%
+                    </td>
+                    <td>
+                        {% if result.passed %}<span class="badge-pass">Pass</span>
+                        {% else %}<span class="badge-fail">Fail</span>{% endif %}
+                    </td>
+                    <td style="white-space:nowrap;">{{ result.taken_at.strftime('%b %d, %Y') }}</td>
+                    <td>
+                        {% if result.certificate_id %}
+                        <a href="{{ url_for('download_certificate', result_id=result.id) }}" class="btn-accent-custom"
+                            style="padding:0.3rem 0.7rem; font-size:0.75rem;">
+                            📥 Cert
+                        </a>
+                        {% endif %}
+                    </td>
+                </tr>
+                {% else %}
+                <tr>
+                    <td colspan="6" style="text-align:center; color:var(--text-muted); padding:2rem;">No results yet.
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}

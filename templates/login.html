@@ -1,0 +1,56 @@
+{% extends 'base.html' %}
+{% block title %}Login – QuizCert{% endblock %}
+{% block meta_desc %}Sign in to QuizCert to access your quizzes and certificates.{% endblock %}
+
+{% block content %}
+<div class="auth-wrapper">
+    <div class="glass-card auth-card">
+
+        <div class="auth-logo">🔑</div>
+        <h1 class="auth-title">Welcome Back</h1>
+        <p class="auth-subtitle">Sign in to your account</p>
+
+        <form method="POST" action="{{ url_for('login') }}" id="loginForm">
+            <div class="form-group">
+                <label class="form-label" for="login-email">Email Address</label>
+                <input type="email" class="form-control-custom" id="login-email" name="email"
+                    placeholder="you@example.com" required autocomplete="email" />
+            </div>
+            <div class="form-group">
+                <label class="form-label" for="login-password">Password</label>
+                <input type="password" class="form-control-custom" id="login-password" name="password"
+                    placeholder="Your password" required autocomplete="current-password" />
+            </div>
+
+            <button type="submit" class="btn-primary-custom w-full" style="justify-content:center; margin-top:0.5rem;">
+                🔓 Sign In
+            </button>
+        </form>
+
+        <div class="divider">or</div>
+
+        <p class="text-center text-small" style="color:var(--text-muted);">
+            Don't have an account?
+            <a href="{{ url_for('register') }}"
+                style="color:var(--primary-light); font-weight:600; text-decoration:none;">
+                Register free
+            </a>
+        </p>
+
+        <p class="text-center text-small mt-2" style="color:var(--text-muted);">
+            🛡️ Admin?
+            <a href="{{ url_for('admin_login') }}" style="color:var(--accent); font-weight:600; text-decoration:none;">
+                Admin Login →
+            </a>
+        </p>
+
+        <!-- Demo credentials hint -->
+        <div class="alert-custom alert-info mt-3"
+            style="font-size:0.82rem; flex-direction:column; align-items:flex-start; gap:0.2rem;">
+            <strong>🧪 Demo Credentials</strong>
+            <span>Email: <code>user@quiz.com</code> &nbsp; Password: <code>user123</code></span>
+        </div>
+
+    </div>
+</div>
+{% endblock %}

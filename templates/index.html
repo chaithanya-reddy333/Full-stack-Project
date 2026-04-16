@@ -1,0 +1,154 @@
+{% extends 'base.html' %}
+{% block title %}Home – QuizCert{% endblock %}
+
+{% block content %}
+<!-- ========== HERO ========== -->
+<section class="hero-section">
+  <div class="container">
+    <div class="hero-badge">🎓 Certified Learning Platform</div>
+    <h1 class="hero-title">
+      Learn, Test & <br/><span class="gradient-text">Get Certified</span>
+    </h1>
+    <p class="hero-subtitle">
+      Take expert-curated quizzes and instantly earn a professional PDF certificate
+      when you pass. Track your progress and compete on the leaderboard.
+    </p>
+    <div class="d-flex gap-2 justify-center flex-wrap">
+      {% if current_user %}
+        <a href="{{ url_for('dashboard') }}" class="btn-primary-custom">
+          📊 Go to Dashboard
+        </a>
+      {% else %}
+        <a href="{{ url_for('register') }}" class="btn-primary-custom animate-pulse-glow">
+          🚀 Start Learning Free
+        </a>
+        <a href="{{ url_for('login') }}" class="btn-outline-custom">
+          🔑 Sign In
+        </a>
+      {% endif %}
+    </div>
+
+    <!-- Stats -->
+    <div class="row justify-content-center mt-5">
+      <div class="col-4 col-md-3 stat-item">
+        <div class="stat-number" data-counter="{{ quizzes|length }}">{{ quizzes|length }}</div>
+        <div class="stat-label">Quizzes Available</div>
+      </div>
+      <div class="col-4 col-md-3 stat-item">
+        <div class="stat-number">∞</div>
+        <div class="stat-label">Retake Attempts</div>
+      </div>
+      <div class="col-4 col-md-3 stat-item">
+        <div class="stat-number">PDF</div>
+        <div class="stat-label">Instant Certificates</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ========== QUIZ LISTING ========== -->
+<section class="p-page">
+  <div class="container">
+    <div class="d-flex justify-between align-center flex-wrap gap-2 mb-3">
+      <div>
+        <h2 class="section-title">Available Quizzes</h2>
+        <p class="section-subtitle">Choose a quiz and test your knowledge</p>
+      </div>
+    </div>
+
+    {% if quizzes %}
+      <div class="row g-4">
+        {% for quiz in quizzes %}
+          <div class="col-md-6 col-lg-4 fade-in-up delay-{{ loop.index }}">
+            <div class="glass-card quiz-card h-100">
+              <div class="quiz-icon">
+                {% set icons = ['📘','🧪','🌐','📊','🔬','💡','🎯','🧠'] %}
+                {{ icons[loop.index0 % icons|length] }}
+              </div>
+              <h3 class="quiz-title">{{ quiz.title }}</h3>
+              <p class="quiz-desc">{{ quiz.description or 'Test your knowledge in this exciting quiz!' }}</p>
+              <div class="quiz-meta mb-3">
+                <span class="quiz-badge">
+                  ❓ {{ quiz.questions|length }} Questions
+                </span>
+                <span class="quiz-badge pass">
+                  🎯 Pass: {{ quiz.passing_score }}%
+                </span>
+                {% if quiz.time_limit > 0 %}
+                  <span class="quiz-badge" style="background:rgba(243,156,18,0.2);color:#ffd93d;border-color:rgba(243,156,18,0.3);">
+                    ⏱️ {{ (quiz.time_limit // 60) }}:{{ '%02d'|format(quiz.time_limit % 60) }}
+                  </span>
+                {% endif %}
+              </div>
+              {% if current_user %}
+                <a href="{{ url_for('quiz', quiz_id=quiz.id) }}" class="btn-primary-custom w-full"
+                   style="justify-content:center;">
+                  Start Quiz →
+                </a>
+              {% else %}
+                <a href="{{ url_for('login') }}" class="btn-outline-custom w-full"
+                   style="justify-content:center;">
+                  Login to Start
+                </a>
+              {% endif %}
+            </div>
+          </div>
+        {% endfor %}
+      </div>
+    {% else %}
+      <div class="glass-card text-center" style="padding:3rem;">
+        <div style="font-size:3rem; margin-bottom:1rem;">📭</div>
+        <p style="color:var(--text-muted);">No quizzes available yet. Check back soon!</p>
+      </div>
+    {% endif %}
+  </div>
+</section>
+
+<!-- ========== FEATURES ========== -->
+<section class="p-page" style="background:rgba(255,255,255,0.02); border-top:1px solid var(--card-border);">
+  <div class="container">
+    <h2 class="section-title text-center mb-1">How It Works</h2>
+    <p class="section-subtitle text-center mb-4">Three simple steps to earn your certificate</p>
+    <div class="row g-4 text-center">
+      {% for step in [
+        ('1️⃣', 'Register & Login', 'Create your free account in seconds and access all available quizzes.'),
+        ('2️⃣', 'Take a Quiz', 'Answer multiple-choice questions within the time limit.'),
+        ('3️⃣', 'Get Certified', 'Pass the quiz and instantly download your professional PDF certificate.')
+      ] %}
+        <div class="col-md-4">
+          <div class="glass-card" style="padding:2rem;">
+            <div style="font-size:2.5rem; margin-bottom:0.75rem;">{{ step[0] }}</div>
+            <h4 style="font-weight:700; margin-bottom:0.5rem;">{{ step[1] }}</h4>
+            <p style="color:var(--text-secondary); font-size:0.9rem;">{{ step[2] }}</p>
+          </div>
+        </div>
+      {% endfor %}
+    </div>
+  </div>
+</section>
+
+<!-- ========== MINI LEADERBOARD ========== -->
+{% if top_results %}
+<section class="p-page">
+  <div class="container" style="max-width:700px;">
+    <h2 class="section-title text-center mb-1">🏆 Top Achievers</h2>
+    <p class="section-subtitle text-center mb-4">Recent top passing scores</p>
+    {% for result, user, quiz in top_results %}
+      <div class="leaderboard-item">
+        <div class="rank-badge rank-{{ loop.index if loop.index <= 3 else 'other' }}">
+          {% if loop.index == 1 %}🥇{% elif loop.index == 2 %}🥈{% elif loop.index == 3 %}🥉{% else %}{{ loop.index }}{% endif %}
+        </div>
+        <div style="flex:1;">
+          <div style="font-weight:600; font-size:0.95rem;">{{ user.name }}</div>
+          <div style="color:var(--text-muted); font-size:0.8rem;">{{ quiz.title }}</div>
+        </div>
+        <div style="font-weight:700; color:var(--accent);">{{ result.score }}%</div>
+      </div>
+    {% endfor %}
+    <div class="text-center mt-3">
+      <a href="{{ url_for('leaderboard') }}" class="btn-outline-custom">View Full Leaderboard →</a>
+    </div>
+  </div>
+</section>
+{% endif %}
+{% endblock %}

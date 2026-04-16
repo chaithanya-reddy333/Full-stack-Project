@@ -1,0 +1,82 @@
+{% extends 'base.html' %}
+{% block title %}{{ quiz.title }} – QuizCert{% endblock %}
+{% block meta_desc %}Take the {{ quiz.title }} quiz on QuizCert.{% endblock %}
+
+{% block content %}
+<div class="container p-page" style="max-width:800px;">
+
+    <!-- Quiz Header Card -->
+    <div class="glass-card quiz-header mb-4">
+        <div class="d-flex justify-between align-center flex-wrap gap-2">
+            <div>
+                <div class="question-number">Quiz</div>
+                <h1 style="font-size:1.5rem; font-weight:800; margin:0.25rem 0;">{{ quiz.title }}</h1>
+                <p style="color:var(--text-muted); font-size:0.88rem; margin:0;">
+                    {{ quiz.description or '' }} &nbsp;·&nbsp; Pass score: {{ quiz.passing_score }}%
+                </p>
+            </div>
+            <!-- Timer -->
+            {% if quiz.time_limit > 0 %}
+            <div class="timer-display" id="quizTimer" data-seconds="{{ quiz.time_limit }}">
+                ⏱️ <span id="timerDisplay">{{ (quiz.time_limit // 60) }}:{{ '%02d'|format(quiz.time_limit % 60)
+                    }}</span>
+            </div>
+            {% endif %}
+        </div>
+
+        <!-- Progress -->
+        <div class="mt-3">
+            <div class="d-flex justify-between align-center mb-1">
+                <span style="font-size:0.8rem; color:var(--text-muted);">Progress</span>
+                <span id="progressText" style="font-size:0.8rem; color:var(--text-muted);">
+                    0/{{ questions|length }} answered
+                </span>
+            </div>
+            <div class="progress-bar-custom">
+                <div class="progress-fill" id="progressFill" style="width:0%;"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Quiz Form -->
+    <form method="POST" action="{{ url_for('submit_quiz', quiz_id=quiz.id) }}" id="quizForm">
+
+        {% for q in questions %}
+        <div class="glass-card question-block mb-3" style="padding:1.5rem;">
+
+            <div class="question-number">Question {{ loop.index }} of {{ questions|length }}</div>
+            <p class="question-text">{{ q.question }}</p>
+
+            <div class="mt-3">
+                {% for opt_num, opt_text in [
+                (1, q.option1),
+                (2, q.option2),
+                (3, q.option3),
+                (4, q.option4)
+                ] %}
+                <label class="option-item" for="q{{ q.id }}_opt{{ opt_num }}">
+                    <input type="radio" name="question_{{ q.id }}" id="q{{ q.id }}_opt{{ opt_num }}"
+                        value="{{ opt_num }}" style="display:none;" />
+                    <span class="option-label">{{ ['A','B','C','D'][opt_num - 1] }}</span>
+                    <span class="option-text">{{ opt_text }}</span>
+                </label>
+                {% endfor %}
+            </div>
+
+        </div>
+        {% endfor %}
+
+        <!-- Submit -->
+        <div class="text-center mt-4">
+            <button type="submit" class="btn-primary-custom" id="submitBtn"
+                style="padding:0.9rem 3rem; font-size:1rem; justify-content:center;" disabled>
+                🚀 Submit Quiz
+            </button>
+            <p class="text-small mt-2" style="color:var(--text-muted);">
+                Answer all {{ questions|length }} questions to enable the submit button.
+            </p>
+        </div>
+
+    </form>
+</div>
+{% endblock %}

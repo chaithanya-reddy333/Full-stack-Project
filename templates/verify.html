@@ -1,0 +1,47 @@
+{% extends 'base.html' %}
+{% block title %}Verify Certificate – QuizCert{% endblock %}
+
+{% block content %}
+<div class="container p-page" style="max-width:620px;">
+    <div class="glass-card" style="padding:2.5rem; text-align:center;">
+
+        {% if valid %}
+        <div style="font-size:4rem; margin-bottom:1rem;" class="animate-float">✅</div>
+        <h1 style="font-size:1.8rem; font-weight:800; color:var(--accent); margin-bottom:0.5rem;">
+            Certificate Verified!
+        </h1>
+        <p style="color:var(--text-muted); margin-bottom:1.5rem;">This certificate is authentic and valid.</p>
+
+        <div class="certificate-preview-card">
+            <div class="cert-emoji">🏆</div>
+            <div class="cert-title">Certificate of Achievement</div>
+            <div class="cert-subtitle">Awarded to</div>
+            <div class="cert-name">{{ user.name }}</div>
+            <div class="cert-info">
+                for successfully completing <strong>{{ quiz.title }}</strong><br />
+                with a score of <strong style="color:var(--accent);">{{ result.score }}%</strong>
+            </div>
+            <div class="cert-info mt-2" style="font-size:0.82rem;">
+                📅 {{ result.taken_at.strftime('%B %d, %Y') }}
+            </div>
+            <div class="cert-id">{{ result.certificate_id }}</div>
+        </div>
+
+        {% else %}
+        <div style="font-size:4rem; margin-bottom:1rem;">❌</div>
+        <h1 style="font-size:1.8rem; font-weight:800; color:#e74c3c; margin-bottom:0.5rem;">
+            Certificate Not Found
+        </h1>
+        <p style="color:var(--text-muted);">
+            No certificate with ID <code style="color:var(--primary-light);">{{ cert_id }}</code> was found.<br />
+            It may be invalid or the ID might be incorrect.
+        </p>
+        {% endif %}
+
+        <div class="mt-4">
+            <a href="{{ url_for('index') }}" class="btn-outline-custom">← Return Home</a>
+        </div>
+
+    </div>
+</div>
+{% endblock %}

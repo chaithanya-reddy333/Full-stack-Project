@@ -1,0 +1,51 @@
+{% extends 'base.html' %}
+{% block title %}Register – QuizCert{% endblock %}
+{% block meta_desc %}Create a free QuizCert account to start taking quizzes and earning certificates.{% endblock %}
+
+{% block content %}
+<div class="auth-wrapper">
+    <div class="glass-card auth-card">
+
+        <div class="auth-logo">🎓</div>
+        <h1 class="auth-title">Create Account</h1>
+        <p class="auth-subtitle">Join thousands of learners today</p>
+
+        <form method="POST" action="{{ url_for('register') }}" id="registerForm" novalidate>
+            <div class="form-group">
+                <label class="form-label" for="reg-name">Full Name</label>
+                <input type="text" class="form-control-custom" id="reg-name" name="name"
+                    placeholder="e.g. Alice Johnson" required autocomplete="name" />
+            </div>
+            <div class="form-group">
+                <label class="form-label" for="reg-email">Email Address</label>
+                <input type="email" class="form-control-custom" id="reg-email" name="email"
+                    placeholder="you@example.com" required autocomplete="email" />
+            </div>
+            <div class="form-group">
+                <label class="form-label" for="reg-password">Password</label>
+                <input type="password" class="form-control-custom" id="reg-password" name="password"
+                    placeholder="At least 6 characters" required autocomplete="new-password" />
+            </div>
+            <div class="form-group">
+                <label class="form-label" for="reg-confirm">Confirm Password</label>
+                <input type="password" class="form-control-custom" id="reg-confirm" name="confirm_password"
+                    placeholder="Repeat your password" required autocomplete="new-password" />
+            </div>
+
+            <button type="submit" class="btn-primary-custom w-full" style="justify-content:center; margin-top:0.5rem;">
+                🚀 Create Account
+            </button>
+        </form>
+
+        <div class="divider">or</div>
+
+        <p class="text-center text-small" style="color:var(--text-muted);">
+            Already have an account?
+            <a href="{{ url_for('login') }}" style="color:var(--primary-light); font-weight:600; text-decoration:none;">
+                Sign in here
+            </a>
+        </p>
+
+    </div>
+</div>
+{% endblock %}

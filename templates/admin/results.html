@@ -1,0 +1,67 @@
+{% extends 'admin/base.html' %}
+{% block title %}All Results – Admin{% endblock %}
+
+{% block content %}
+<div class="mb-4">
+    <h1 class="section-title">📈 All Quiz Results</h1>
+    <p class="section-subtitle">Every submission across all users and quizzes</p>
+</div>
+
+<div class="glass-card admin-card">
+    <div style="overflow-x:auto;">
+        <table class="admin-table">
+            <thead>
+                <tr>
+                    <th>#</th>
+                    <th>User</th>
+                    <th>Quiz</th>
+                    <th>Score</th>
+                    <th>Status</th>
+                    <th>Date</th>
+                    <th>Certificate</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for result, user, quiz in all_results %}
+                <tr>
+                    <td style="color:var(--text-muted);">{{ result.id }}</td>
+                    <td style="font-weight:600;">{{ user.name }}</td>
+                    <td style="max-width:180px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;">
+                        {{ quiz.title }}
+                    </td>
+                    <td style="font-weight:700; color:{% if result.passed %}var(--accent){% else %}#e74c3c{% endif %};">
+                        {{ result.score }}%
+                    </td>
+                    <td>
+                        {% if result.passed %}
+                        <span class="badge-pass">Pass</span>
+                        {% else %}
+                        <span class="badge-fail">Fail</span>
+                        {% endif %}
+                    </td>
+                    <td style="white-space:nowrap; color:var(--text-muted);">
+                        {{ result.taken_at.strftime('%b %d, %Y %H:%M') }}
+                    </td>
+                    <td>
+                        {% if result.certificate_id %}
+                        <a href="{{ url_for('download_certificate', result_id=result.id) }}" class="btn-accent-custom"
+                            style="padding:0.3rem 0.7rem; font-size:0.75rem;">
+                            📥 PDF
+                        </a>
+                        {% else %}
+                        <span style="color:var(--text-muted); font-size:0.82rem;">—</span>
+                        {% endif %}
+                    </td>
+                </tr>
+                {% else %}
+                <tr>
+                    <td colspan="7" style="text-align:center; color:var(--text-muted); padding:2rem;">
+                        No quiz submissions yet.
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}

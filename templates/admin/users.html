@@ -1,0 +1,44 @@
+{% extends 'admin/base.html' %}
+{% block title %}Users – Admin{% endblock %}
+
+{% block content %}
+<div class="mb-4">
+    <h1 class="section-title">👥 Registered Users</h1>
+    <p class="section-subtitle">All non-admin users on the platform</p>
+</div>
+
+<div class="glass-card admin-card">
+    <div style="overflow-x:auto;">
+        <table class="admin-table">
+            <thead>
+                <tr>
+                    <th>#</th>
+                    <th>Name</th>
+                    <th>Email</th>
+                    <th>Registered</th>
+                    <th>Quizzes Taken</th>
+                    <th>Passed</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for user in users %}
+                <tr>
+                    <td style="color:var(--text-muted);">{{ user.id }}</td>
+                    <td style="font-weight:600;">{{ user.name }}</td>
+                    <td style="color:var(--text-secondary);">{{ user.email }}</td>
+                    <td style="white-space:nowrap;">{{ user.created_at.strftime('%b %d, %Y') }}</td>
+                    <td>{{ user.results|length }}</td>
+                    <td style="color:var(--accent);">{{ user.results|selectattr('passed')|list|length }}</td>
+                </tr>
+                {% else %}
+                <tr>
+                    <td colspan="6" style="text-align:center; color:var(--text-muted); padding:2rem;">
+                        No users registered yet.
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,12 @@
+{% extends 'base.html' %}
+{% block title %}404 Not Found – QuizCert{% endblock %}
+{% block content %}
+<div class="auth-wrapper">
+    <div class="glass-card auth-card text-center" style="padding:3rem;">
+        <div style="font-size:4rem; margin-bottom:1rem;">🔍</div>
+        <h1 style="font-size:2rem; font-weight:800; color:var(--primary-light);">404 – Not Found</h1>
+        <p style="color:var(--text-muted); margin:1rem 0;">The page you're looking for doesn't exist.</p>
+        <a href="{{ url_for('index') }}" class="btn-primary-custom" style="justify-content:center;">← Go Home</a>
+    </div>
+</div>
+{% endblock %}
